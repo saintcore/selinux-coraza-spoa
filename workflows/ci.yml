@@ -1,5 +1,5 @@
 # .github/workflows/ci.yml
-name: Build & Test
+name: build
 
 on:
   pull_request:
