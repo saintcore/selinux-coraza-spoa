@@ -1,0 +1,31 @@
+# .github/workflows/ci.yml
+name: Build & Test
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: rockylinux:9
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: dnf install -y selinux-policy-devel make rpm-build
+
+      - name: Compile SELinux Policy
+        run: make -f /usr/share/selinux/devel/Makefile coraza_spoa.pp
+
+      - name: Run RPM Build
+        run: |
+          rpmbuild --define "_sourcedir ${GITHUB_WORKSPACE}" \
+                   --define "_specdir ${GITHUB_WORKSPACE}" \
+                   --define "_builddir ${GITHUB_WORKSPACE}" \
+                   --define "_srcrpmdir ${GITHUB_WORKSPACE}" \
+                   --define "_rpmdir ${GITHUB_WORKSPACE}" \
+                   --define "_buildrootdir ${GITHUB_WORKSPACE}/.build" \
+                   -ba coraza_spoa_selinux.spec

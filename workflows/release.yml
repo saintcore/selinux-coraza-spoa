@@ -1,0 +1,47 @@
+# .github/workflows/release.yml
+name: Build & Publish Release
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'The tag to build (e.g., v1.0.0)'
+        required: true
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    container: rockylinux:9
+    permissions:
+      contents: write 
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.tag }}
+
+      - name: Install Build Dependencies
+        run: dnf install -y selinux-policy-devel make rpm-build
+
+      - name: Compile SELinux Policy
+        run: make -f /usr/share/selinux/devel/Makefile coraza_spoa.pp
+
+      - name: Build Final RPMs
+        run: |
+          rpmbuild --define "_sourcedir ${GITHUB_WORKSPACE}" \
+                   --define "_specdir ${GITHUB_WORKSPACE}" \
+                   --define "_builddir ${GITHUB_WORKSPACE}" \
+                   --define "_srcrpmdir ${GITHUB_WORKSPACE}" \
+                   --define "_rpmdir ${GITHUB_WORKSPACE}" \
+                   --define "_buildrootdir ${GITHUB_WORKSPACE}/.build" \
+                   -ba coraza_spoa_selinux.spec
+
+      - name: Upload RPMs to the Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.tag }}
+          files: |
+            noarch/*.rpm
+            *.src.rpm
