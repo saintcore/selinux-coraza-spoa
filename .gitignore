@@ -1,0 +1,11 @@
+# Compiled SELinux Policy
+*.pp
+*.mod
+
+# Build/RPM directories
+tmp/
+.build/
+noarch/
+
+# RPM package files
+*.rpm
