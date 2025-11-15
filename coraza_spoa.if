@@ -1,0 +1,40 @@
+
+## <summary>policy for coraza_spoa</summary>
+
+########################################
+## <summary>
+##      Execute coraza_spoa_exec_t in the coraza_spoa domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##      Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`coraza_spoa_domtrans',`
+        gen_require(`
+                type coraza_spoa_t, coraza_spoa_exec_t;
+        ')
+
+        corecmd_search_bin($1)
+        domtrans_pattern($1, coraza_spoa_exec_t, coraza_spoa_t)
+')
+
+######################################
+## <summary>
+##      Execute coraza_spoa in the caller domain.
+## </summary>
+## <param name="domain">
+##      <summary>
+##      Domain allowed access.
+##      </summary>
+## </param>
+#
+interface(`coraza_spoa_exec',`
+        gen_require(`
+                type coraza_spoa_exec_t;
+        ')
+
+        corecmd_search_bin($1)
+        can_exec($1, coraza_spoa_exec_t)
+')
