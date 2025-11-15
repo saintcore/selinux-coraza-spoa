@@ -1,0 +1,51 @@
+policy_module(coraza_spoa, 1.0.0)
+
+require {
+        type coraza_spoa_t;
+        class tcp_socket accept;
+        class tcp_socket listen;
+        type tmp_t;
+}
+
+########################################
+#
+# Declarations
+#
+
+type coraza_spoa_t;
+type coraza_spoa_exec_t;
+init_daemon_domain(coraza_spoa_t, coraza_spoa_exec_t)
+
+#permissive coraza_spoa_t;
+
+########################################
+#
+# coraza_spoa local policy
+#
+allow coraza_spoa_t self:capability { setgid setuid };
+allow coraza_spoa_t self:fifo_file rw_fifo_file_perms;
+allow coraza_spoa_t self:unix_stream_socket create_stream_socket_perms;
+
+domain_use_interactive_fds(coraza_spoa_t)
+
+files_read_etc_files(coraza_spoa_t)
+
+miscfiles_read_localization(coraza_spoa_t)
+
+sysnet_dns_name_resolve(coraza_spoa_t)
+
+#============= coraza_spoa_t ==============
+init_nnp_daemon_domain(coraza_spoa_t)
+allow coraza_spoa_t self:tcp_socket accept;
+allow coraza_spoa_t self:tcp_socket listen;
+allow coraza_spoa_t var_log_t:file open;
+dev_read_sysfs(coraza_spoa_t)
+logging_create_generic_logs(coraza_spoa_t)
+corenet_tcp_bind_http_port(coraza_spoa_t)
+kernel_search_network_sysctl(coraza_spoa_t)
+corenet_tcp_bind_generic_node(coraza_spoa_t)
+kernel_read_net_sysctls(coraza_spoa_t)
+
+
+allow coraza_spoa_t tmp_t:dir { add_name remove_name write };
+allow coraza_spoa_t tmp_t:file { create open unlink write };
