@@ -1,2 +1,3 @@
 /usr/sbin/coraza-spoa           --      gen_context(system_u:object_r:coraza_spoa_exec_t,s0)
-/etc/coraza-spoa(/.*)?	system_u:object_r:coraza_config_t:s0
+/etc/coraza-spoa(/.*)?  system_u:object_r:coraza_config_t:s0
+/var/log/coraza-spoa(/.*)?      system_u:object_r:coraza_log_t:s0

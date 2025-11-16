@@ -19,6 +19,9 @@ init_daemon_domain(coraza_spoa_t, coraza_spoa_exec_t)
 type coraza_config_t;
 files_type(coraza_config_t)
 
+type coraza_log_t;
+logging_log_file(coraza_log_t)
+
 #permissive coraza_spoa_t;
 
 ########################################
@@ -31,8 +34,13 @@ allow coraza_spoa_t self:unix_stream_socket create_stream_socket_perms;
 
 domain_use_interactive_fds(coraza_spoa_t)
 
+# config files
 allow coraza_spoa_t coraza_config_t:file { read open getattr };
 allow coraza_spoa_t coraza_config_t:dir { search getattr read open };
+
+# log files
+allow coraza_spoa_t coraza_log_t:file { open };
+allow coraza_spoa_t coraza_log_t:dir { search };
 
 miscfiles_read_localization(coraza_spoa_t)
 
@@ -42,9 +50,7 @@ sysnet_dns_name_resolve(coraza_spoa_t)
 init_nnp_daemon_domain(coraza_spoa_t)
 allow coraza_spoa_t self:tcp_socket accept;
 allow coraza_spoa_t self:tcp_socket listen;
-allow coraza_spoa_t var_log_t:file open;
 dev_read_sysfs(coraza_spoa_t)
-logging_create_generic_logs(coraza_spoa_t)
 corenet_tcp_bind_http_port(coraza_spoa_t)
 kernel_search_network_sysctl(coraza_spoa_t)
 corenet_tcp_bind_generic_node(coraza_spoa_t)
