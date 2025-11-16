@@ -16,6 +16,9 @@ type coraza_spoa_t;
 type coraza_spoa_exec_t;
 init_daemon_domain(coraza_spoa_t, coraza_spoa_exec_t)
 
+type coraza_config_t;
+files_type(coraza_config_t)
+
 #permissive coraza_spoa_t;
 
 ########################################
@@ -28,7 +31,8 @@ allow coraza_spoa_t self:unix_stream_socket create_stream_socket_perms;
 
 domain_use_interactive_fds(coraza_spoa_t)
 
-files_read_etc_files(coraza_spoa_t)
+allow coraza_spoa_t coraza_config_t:file { read open getattr };
+allow coraza_spoa_t coraza_config_t:dir { search getattr read open };
 
 miscfiles_read_localization(coraza_spoa_t)
 
