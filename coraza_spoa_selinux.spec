@@ -7,7 +7,7 @@ restorecon -R /usr/sbin/coraza-spoa; \
 %define selinux_policyver 38.1.53-5
 
 Name:   coraza_spoa_selinux
-Version:        1.0.0
+Version:        1.1.0
 Release:        1%{?dist}
 Summary:        SELinux policy module for coraza_spoa
 
