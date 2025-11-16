@@ -1,63 +1,83 @@
 policy_module(coraza_spoa, 1.0.0)
 
+########################################
+#
+# Requires Section
+#
+
 require {
-        type coraza_spoa_t;
-        class tcp_socket accept;
-        class tcp_socket listen;
-        type tmp_t;
-        attribute port_type;
-        type haproxy_t;
+    type coraza_spoa_t;
+    type haproxy_t;
+    type tmp_t;
+    attribute port_type;
+    class tcp_socket { accept listen };
 }
 
 ########################################
 #
-# Declarations
+# Type Declarations and Initial Domains
 #
 
+# Domain and Execution Type
 type coraza_spoa_t;
 type coraza_spoa_exec_t;
 init_daemon_domain(coraza_spoa_t, coraza_spoa_exec_t)
+init_nnp_daemon_domain(coraza_spoa_t) # From the original policy block
 
+# Port Type
 type coraza_spoa_port_t;
 typeattribute coraza_spoa_port_t port_type;
 
+# Config File Type
 type coraza_config_t;
 files_type(coraza_config_t)
 
+# Log File Type
 type coraza_log_t;
 logging_log_file(coraza_log_t)
 
-#permissive coraza_spoa_t;
+# Optional: Keep this commented out unless actively debugging
+# permissive coraza_spoa_t;
 
 ########################################
 #
-# coraza_spoa local policy
+# Interface Calls (Template Macro Usage)
+# (Standard macros to grant common permissions)
 #
-allow coraza_spoa_t self:capability { setgid setuid };
-allow coraza_spoa_t self:fifo_file rw_fifo_file_perms;
-allow coraza_spoa_t self:unix_stream_socket create_stream_socket_perms;
 
-allow coraza_spoa_t coraza_spoa_port_t:tcp_socket name_bind;
-allow coraza_spoa_t node_t:tcp_socket node_bind;
-allow haproxy_t coraza_spoa_port_t:tcp_socket name_connect;
-
-# config files
-allow coraza_spoa_t coraza_config_t:file { read open getattr };
-allow coraza_spoa_t coraza_config_t:dir { search getattr read open };
-
-# log files
-allow coraza_spoa_t coraza_log_t:file { open };
-allow coraza_spoa_t coraza_log_t:dir { search };
-
+# Network/DNS
 sysnet_dns_name_resolve(coraza_spoa_t)
 
-#============= coraza_spoa_t ==============
-init_nnp_daemon_domain(coraza_spoa_t)
-allow coraza_spoa_t self:tcp_socket { accept listen };
+# Kernel/System Settings
 dev_read_sysfs(coraza_spoa_t)
 kernel_search_network_sysctl(coraza_spoa_t)
 kernel_read_net_sysctls(coraza_spoa_t)
 
+########################################
+#
+# Local Policy: Allow Rules
+# (Specific 'allow' rules grouped by target resource)
+#
 
+# Self Permissions (Capabilities, Sockets, etc.)
+allow coraza_spoa_t self:capability { setgid setuid };
+allow coraza_spoa_t self:fifo_file rw_fifo_file_perms;
+allow coraza_spoa_t self:unix_stream_socket create_stream_socket_perms;
+allow coraza_spoa_t self:tcp_socket { accept listen };
+
+# Configuration File Access (coraza_config_t)
+allow coraza_spoa_t coraza_config_t:file { read open getattr };
+allow coraza_spoa_t coraza_config_t:dir { search getattr read open };
+
+# Log File Access (coraza_log_t)
+allow coraza_spoa_t coraza_log_t:file { open };
+allow coraza_spoa_t coraza_log_t:dir { search };
+
+# Socket/Port Binding and Connection
+allow coraza_spoa_t coraza_spoa_port_t:tcp_socket name_bind;
+allow coraza_spoa_t node_t:tcp_socket node_bind;
+allow haproxy_t coraza_spoa_port_t:tcp_socket name_connect;
+
+# Temporary File Access (tmp_t)
 allow coraza_spoa_t tmp_t:dir { add_name remove_name write };
 allow coraza_spoa_t tmp_t:file { create open unlink write };
