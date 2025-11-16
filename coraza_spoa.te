@@ -5,6 +5,8 @@ require {
         class tcp_socket accept;
         class tcp_socket listen;
         type tmp_t;
+        attribute port_type;
+        type haproxy_t;
 }
 
 ########################################
@@ -15,6 +17,9 @@ require {
 type coraza_spoa_t;
 type coraza_spoa_exec_t;
 init_daemon_domain(coraza_spoa_t, coraza_spoa_exec_t)
+
+type coraza_spoa_port_t;
+typeattribute coraza_spoa_port_t port_type;
 
 type coraza_config_t;
 files_type(coraza_config_t)
@@ -31,6 +36,10 @@ logging_log_file(coraza_log_t)
 allow coraza_spoa_t self:capability { setgid setuid };
 allow coraza_spoa_t self:fifo_file rw_fifo_file_perms;
 allow coraza_spoa_t self:unix_stream_socket create_stream_socket_perms;
+
+allow coraza_spoa_t coraza_spoa_port_t:tcp_socket name_bind;
+allow coraza_spoa_t node_t:tcp_socket node_bind;
+allow haproxy_t coraza_spoa_port_t:tcp_socket name_connect;
 
 domain_use_interactive_fds(coraza_spoa_t)
 
@@ -51,9 +60,7 @@ init_nnp_daemon_domain(coraza_spoa_t)
 allow coraza_spoa_t self:tcp_socket accept;
 allow coraza_spoa_t self:tcp_socket listen;
 dev_read_sysfs(coraza_spoa_t)
-corenet_tcp_bind_http_port(coraza_spoa_t)
 kernel_search_network_sysctl(coraza_spoa_t)
-corenet_tcp_bind_generic_node(coraza_spoa_t)
 kernel_read_net_sysctls(coraza_spoa_t)
 
 
