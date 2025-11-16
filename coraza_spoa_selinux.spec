@@ -3,11 +3,13 @@
 
 %define relabel_files() \
 restorecon -R /usr/sbin/coraza-spoa; \
+restorecon -R /etc/coraza-spoa; \
+restorecon -R /var/log/coraza-spoa; \
 
 %define selinux_policyver 38.1.53-5
 
 Name:   coraza_spoa_selinux
-Version:        1.1.0
+Version:        1.1.1
 Release:        1%{?dist}
 Summary:        SELinux policy module for coraza_spoa
 
@@ -44,7 +46,9 @@ install -d %{buildroot}/etc/selinux/targeted/contexts/users/
 semodule -n -i %{_datadir}/selinux/packages/coraza_spoa.pp
 
 if [ $1 -eq 1 ]; then
-
+    /usr/sbin/semanage fcontext -a -t coraza_spoa_exec_t "/usr/sbin/coraza-spoa"
+    /usr/sbin/semanage fcontext -a -t coraza_config_t "/etc/coraza-spoa(/.*)?"
+    /usr/sbin/semanage fcontext -a -t coraza_log_t "/var/log/coraza-spoa(/.*)?"
 fi
 if /usr/sbin/selinuxenabled ; then
     /usr/sbin/load_policy
@@ -54,11 +58,14 @@ exit 0
 
 %postun
 if [ $1 -eq 0 ]; then
+    /usr/sbin/semanage fcontext -d "/usr/sbin/coraza-spoa"
+    /usr/sbin/semanage fcontext -d "/etc/coraza-spoa(/.*)?"
+    /usr/sbin/semanage fcontext -d "/var/log/coraza-spoa(/.*)?"
 
-    semodule -n -r coraza_spoa
+    semodule -n -r coraza_spoa    
     if /usr/sbin/selinuxenabled ; then
-       /usr/sbin/load_policy
-       %relabel_files
+        /usr/sbin/load_policy
+        %relabel_files
     fi;
 fi;
 exit 0
