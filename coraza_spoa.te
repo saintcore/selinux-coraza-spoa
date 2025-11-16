@@ -53,8 +53,7 @@ sysnet_dns_name_resolve(coraza_spoa_t)
 
 #============= coraza_spoa_t ==============
 init_nnp_daemon_domain(coraza_spoa_t)
-allow coraza_spoa_t self:tcp_socket accept;
-allow coraza_spoa_t self:tcp_socket listen;
+allow coraza_spoa_t self:tcp_socket { accept listen };
 dev_read_sysfs(coraza_spoa_t)
 kernel_search_network_sysctl(coraza_spoa_t)
 kernel_read_net_sysctls(coraza_spoa_t)
