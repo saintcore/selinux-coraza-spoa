@@ -41,8 +41,6 @@ allow coraza_spoa_t coraza_spoa_port_t:tcp_socket name_bind;
 allow coraza_spoa_t node_t:tcp_socket node_bind;
 allow haproxy_t coraza_spoa_port_t:tcp_socket name_connect;
 
-domain_use_interactive_fds(coraza_spoa_t)
-
 # config files
 allow coraza_spoa_t coraza_config_t:file { read open getattr };
 allow coraza_spoa_t coraza_config_t:dir { search getattr read open };
@@ -50,8 +48,6 @@ allow coraza_spoa_t coraza_config_t:dir { search getattr read open };
 # log files
 allow coraza_spoa_t coraza_log_t:file { open };
 allow coraza_spoa_t coraza_log_t:dir { search };
-
-miscfiles_read_localization(coraza_spoa_t)
 
 sysnet_dns_name_resolve(coraza_spoa_t)
 
