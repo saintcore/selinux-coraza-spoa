@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/saintcore/selinux-coraza-spoa/compare/v1.1.0...v1.1.1) (2025-11-16)
+
+
+### Bug Fixes
+
+* Correct SELinux RPM scriptlet logic ([#6](https://github.com/saintcore/selinux-coraza-spoa/issues/6)) ([5d2c9a2](https://github.com/saintcore/selinux-coraza-spoa/commit/5d2c9a24e778b73130830fc0da7e885ac3eb4898))
+
 ## [1.1.0](https://github.com/saintcore/selinux-coraza-spoa/compare/v1.0.0...v1.1.0) (2025-11-16)
 
 
